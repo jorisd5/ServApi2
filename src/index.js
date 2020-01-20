@@ -14,13 +14,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   req.context = {
     models,
-    me: {
-    id: '1',
-    username: 'J',
-  },
+    me: await models.User.findByLogin('jd'),
   };
   next();
 });
@@ -29,8 +26,48 @@ app.use('/session', routes.session);
 app.use('/users', routes.user);
 app.use('/messages', routes.message);
 
-sequelize.sync().then(() => {
+const eraseDatabaseOnSync = true;
+
+sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
+  if (eraseDatabaseOnSync) {
+    createUsersWithMessages();
+  }
+
   app.listen(process.env.PORT, () =>
     console.log(`Example app listening on port ${process.env.PORT}!`),
   );
 });
+
+const createUsersWithMessages = async () => {
+  await models.User.create(
+    {
+      username: 'jd',
+      messages: [
+        {
+          text: 'Building Nodejs Rest API',
+        },
+      ],
+    },
+    {
+      include: [models.Message],
+    },
+  );
+
+  await models.User.create(
+    {
+      username: 'dludo',
+      messages: [
+        {
+          text: 'Having a byrole in this production',
+        },
+        {
+          text: 'And meeting some nice people',
+        },
+      ],
+    },
+    {
+      include: [models.Message],
+    }
+  );
+
+};

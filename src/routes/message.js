@@ -3,50 +3,51 @@ import { Router } from 'express';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  return res.send(Object.values(req.context.models.messages));
-});
-router.get('/:messageId', (req, res) => {
-  return res.send(req.context.models.messages[req.params.messageId]);
+router.get('/', async (req, res) => {
+  // duplicated below, to refactor
+  const messages = await req.context.models.Message.findAll();
+  return res.send(messages);
 });
 
-router.post('/', (req, res) => {
-  const id = uuidv4();
-  const message = {
-    id,
+router.get('/:messageId', async (req, res) => {
+  const message = await req.context.models.Message.findByPk(
+    req.params.messageId,
+  );
+  return res.send(message);
+});
+
+router.post('/', async (req, res) => {
+  const message = await req.context.models.Message.create({
     text: req.body.text,
     userId: req.context.me.id,
-  };
-
-  req.context.models.messages[id] = message;
+  });
 
   return res.send(message);
 });
 
-router.delete('/:messageId', (req, res) => {
-  const {
-      [req.params.messageId]: message,
-      ...otherMessages
-  } = req.context.models.messages;
+router.delete('/:messageId', async (req, res) => {
+  const result = await req.context.models.Message.destroy({
+    where: { id: req.params.messageId },
+  });
 
-  req.context.models.messages = otherMessages;
-
-  return res.send(message);
+  return res.send(true);
 });
 
-router.put('/:messageId', (req, res) => {
-  const message = {
-    id: req.params.messageId,
-    text: req.body.text,
-    userId: req.me.id,
-  };
-
-  if((messages[message.id].userId) === message.userId) {
-
-    messages[message.id] = message.text;
-
-    return res.send(message);
-  } else {
+router.put('/:messageId', async (req, res) => {
+  const message = await req.context.models.Message.findByPk(req.params.messageId);
+  if((message.userId) === req.context.me.id) {
+    try {
+      const result = await req.context.models.Message.update({
+        // text: req.body.text,
+        // userId: req.me.id,
+        where: { id: req.params.messageId },
+      });
+      return res.send(true);
+    } catch (err) {
+        return res.send("Sorry, an error occurred");
+    }
+  }
+  else {
     return res.send("Sorry, you are not the creator of the message");
   }
 });
