@@ -1,9 +1,9 @@
 const cost = (sequelize, DataTypes) => {
   const Cost = sequelize.define('cost', {
     description: DataTypes.STRING,
+    type: DataTypes.STRING,
     amount: DataTypes.NUMERIC,
     source: DataTypes.STRING,
-    account: DataTypes.String
   });
 
   Cost.associate = models => {

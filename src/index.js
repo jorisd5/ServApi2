@@ -24,13 +24,13 @@ app.use(async (req, res, next) => {
 
 app.use('/session', routes.session);
 app.use('/users', routes.user);
-app.use('/messages', routes.message);
+app.use('/costs', routes.cost);
 
 const eraseDatabaseOnSync = true;
 
 sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   if (eraseDatabaseOnSync) {
-    createUsersWithMessages();
+    createUsersWithCosts();
   }
 
   app.listen(process.env.PORT, () =>
@@ -38,36 +38,53 @@ sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   );
 });
 
-const createUsersWithMessages = async () => {
+const createUsersWithCosts = async () => {
   await models.User.create(
     {
       username: 'jd',
-      messages: [
+      costs: [
         {
-          text: 'Building Nodejs Rest API',
+          description: 'Bruin brood',
+          type: 'Private',
+          amount: 2.10,
+          source: 'Bakker',
         },
-      ],
-    },
-    {
-      include: [models.Message],
-    },
+        {
+          username: 'jd',
+          description: 'Kruidenier',
+          type: 'Private',
+          amount: 20,
+          source: 'Delhaize',
+        },
+        {
+          username: 'jd',
+          description: 'Film',
+          type: 'Private',
+          amount: 11,
+          source: 'UGC',
+        },
+    ],
+  },
+  {
+    include: [models.Cost],
+  },
   );
 
-  await models.User.create(
-    {
-      username: 'dludo',
-      messages: [
-        {
-          text: 'Having a byrole in this production',
-        },
-        {
-          text: 'And meeting some nice people',
-        },
-      ],
-    },
-    {
-      include: [models.Message],
-    }
-  );
+  // await models.User.create(
+  //   {
+  //     username: 'dludo',
+  //     messages: [
+  //       {
+  //         text: 'Having a byrole in this production',
+  //       },
+  //       {
+  //         text: 'And meeting some nice people',
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     include: [models.Message],
+  //   }
+  // );
 
 };
