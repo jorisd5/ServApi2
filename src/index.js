@@ -26,7 +26,7 @@ app.use('/session', routes.session);
 app.use('/users', routes.user);
 app.use('/costs', routes.cost);
 
-const eraseDatabaseOnSync = true;
+const eraseDatabaseOnSync = false;
 
 sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   if (eraseDatabaseOnSync) {
@@ -50,6 +50,19 @@ const createUsersWithCosts = async () => {
           source: 'Bakker',
         },
         {
+          description: 'Bruin brood',
+          type: 'Private',
+          amount: 2.10,
+          source: 'Bakker',
+        },
+        {
+          username: 'jd',
+          description: 'Kruidenier',
+          type: 'Private',
+          amount: 20,
+          source: 'Delhaize',
+        },
+        {
           username: 'jd',
           description: 'Kruidenier',
           type: 'Private',
@@ -63,6 +76,20 @@ const createUsersWithCosts = async () => {
           amount: 11,
           source: 'UGC',
         },
+        {
+          username: 'jd',
+          description: 'Film',
+          type: 'Private',
+          amount: 11,
+          source: 'UGC',
+        },
+        {
+          username: 'jd',
+          description: 'Film',
+          type: 'Private',
+          amount: 11,
+          source: 'UGC',
+        }
     ],
   },
   {
