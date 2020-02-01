@@ -4,6 +4,8 @@ const cost = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     amount: DataTypes.NUMERIC,
     source: DataTypes.STRING,
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE,
   });
 
   Cost.associate = models => {

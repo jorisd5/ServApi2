@@ -1,10 +1,14 @@
 import uuidv4 from 'uuid/v4';
 import { Router } from 'express';
 
+import models, { sequelize } from '../models';
+
+// Refactor to use transactions for production
+// https://sequelize.org/master/manual/transactions.html
+
 const router = Router();
 
 router.get('/', async (req, res) => {
-  // duplicated below, to refactor
   const costs = await req.context.models.Cost.findAll();
   return res.send(costs);
 });
@@ -13,7 +17,17 @@ router.get('/:costId', async (req, res) => {
   const cost = await req.context.models.Cost.findByPk(
     req.params.costId,
   );
+  // let creationDate = TO_CHAR(cost.createdAt, 'MM')
+  // console.log(cost.creation)
   return res.send(cost);
+});
+
+router.get('/month/:month', async (req, res) => {
+  console.log('month route function reached');
+  const { QueryTypes } = require('sequelize');
+  const costs = await sequelize.query(`SELECT * FROM costs WHERE EXTRACT(MONTH FROM createdAt) = ${req.params.month}`, { type: QueryTypes.SELECT });
+  // const costs = await sequelize.query(`SELECT * FROM costs WHERE amount = 2.1`, { type: QueryTypes.SELECT });
+  return res.send(costs);
 });
 
 router.post('/', async (req, res) => {

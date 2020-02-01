@@ -26,7 +26,7 @@ app.use('/session', routes.session);
 app.use('/users', routes.user);
 app.use('/costs', routes.cost);
 
-const eraseDatabaseOnSync = false;
+const eraseDatabaseOnSync = true;
 
 sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   if (eraseDatabaseOnSync) {
